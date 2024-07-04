@@ -1,13 +1,50 @@
-import React from 'react';
-import { useLoaderData } from 'react-router-dom';
+import React, { useState } from "react";
+import { useLoaderData } from "react-router-dom";
+import TShirt from "../TShirt/TShirt";
+import Cart from "../Cart/Cart";
+import toast from 'react-hot-toast';
 
 const Home = () => {
-    const tshirts = useLoaderData();
-    return (
-        <div>
-            this is home {tshirts.length}
-        </div>
-    );
+  const [cart, setCart] = useState([]);
+  const tshirts = useLoaderData();
+
+  const handleAddToCart = (tshirt) => {
+    const exists = cart.find (ts=> ts._id === tshirt._id);
+    if(exists){
+       toast('Already added this t-shirt');
+    }else{
+        const newCart=[...cart, tshirt];
+        setCart(newCart);
+    }
+    const newCart = [...cart, tshirt];
+    setCart(newCart);
+  };
+
+  const handleRemoveFromCart = id => {
+    const remaining = cart.filter(ts=> ts._id !== id);
+    setCart(remaining)
+
+  };
+
+  return (
+    <div
+      className="home-container grid gap-3 mt-10  justify-center"
+      style={{ gridTemplateColumns: `3fr 1fr` }}
+    >
+      <div className="tshirt-container grid grid-cols-3 gap-4 items-center justify-center ">
+        {tshirts.map((tshirt) => (
+          <TShirt
+            key={tshirt._id}
+            tshirt={tshirt}
+            handleAddToCart={() => handleAddToCart(tshirt)}
+          ></TShirt>
+        ))}
+      </div>
+      <div className="cart-container">
+        <Cart cart={cart} handleRemoveFromCart={handleRemoveFromCart}></Cart>
+      </div>
+    </div>
+  );
 };
 
 export default Home;
